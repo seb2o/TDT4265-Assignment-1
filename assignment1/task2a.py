@@ -12,8 +12,7 @@ def pre_process_images(X: np.ndarray):
     """
     assert X.shape[1] == 784,\
         f"X.shape[1]: {X.shape[1]}, should be 784"
-    # TODO implement this function (Task 2a)
-    return X
+    return np.column_stack((X/128 - 1, [1]*X.shape[0]))
 
 
 def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray) -> float:

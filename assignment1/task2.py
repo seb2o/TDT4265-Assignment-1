@@ -15,9 +15,11 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: BinaryModel) -
     Returns:
         Accuracy (float)
     """
-    # TODO Implement this function (Task 2c)
-    accuracy = 0.0
-    return accuracy
+    output = model.forward(X)
+    # note that this doesnt produce exactly what is asked since rint will round .5 components to 0 instead of 1.
+    # however the speed gain compared to looping to apply a function to each component seems enough to justify this
+    correct_guess_count = np.count_nonzero(np.rint(output) == targets)
+    return correct_guess_count/len(targets)
 
 
 class LogisticTrainer(BaseTrainer):

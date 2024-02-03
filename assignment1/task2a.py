@@ -23,10 +23,10 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray) -> float:
     Returns:
         Cross entropy error (float)
     """
-    # TODO implement this function (Task 2a)
+
     assert targets.shape == outputs.shape,\
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
-    return 0
+    return np.mean(-(targets * np.log(outputs) + (1 - targets) * np.log(1 - outputs)))
 
 
 class BinaryModel:
@@ -58,10 +58,10 @@ class BinaryModel:
 
         assert targets.shape == outputs.shape,\
             f"Output shape: {outputs.shape}, targets: {targets.shape}"
-        self.grad = np.zeros_like(self.w)
+        self.grad = np.mean((outputs - targets) * X, axis=0).reshape(-1, 1)
         assert self.grad.shape == self.w.shape,\
             f"Grad shape: {self.grad.shape}, w: {self.w.shape}"
-        self.grad = np.mean((outputs - targets) * X, axis=0)
+
 
     def zero_grad(self) -> None:
         self.grad = None

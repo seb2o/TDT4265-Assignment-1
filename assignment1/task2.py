@@ -34,7 +34,11 @@ class LogisticTrainer(BaseTrainer):
         Returns:
             loss value (float) on batch
         """
-        # TODO: Implement this function (task 2b)
+        output_batch = self.model.forward(X_batch)
+        self.model.backward(X_batch, output_batch,  Y_batch)
+
+        self.model.w = self.model.w - self.learning_rate*self.model.grad
+
         loss = 0
         return loss
 

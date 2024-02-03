@@ -38,7 +38,7 @@ class BaseTrainer:
         """
         pass
 
-    def train_step(self):
+    def train_step(self, X, Y):
         """
             Perform forward, backward and gradient descent step here.
         Args:

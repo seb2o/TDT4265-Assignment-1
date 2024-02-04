@@ -38,10 +38,8 @@ class LogisticTrainer(BaseTrainer):
         """
         output_batch = self.model.forward(X_batch)
         self.model.backward(X_batch, output_batch,  Y_batch)
-
+        loss = cross_entropy_loss(Y_batch, output_batch)
         self.model.w = self.model.w - self.learning_rate*self.model.grad
-
-        loss = 0
         return loss
 
     def validation_step(self):

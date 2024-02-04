@@ -97,14 +97,14 @@ class BaseTrainer:
     # go trough the list
 
 
-def early_stopping_check(loss_history, current_step, num_step_per_val, patience=10):
+def early_stopping_check(loss_history, current_step, num_step_per_val, patience=10, epsilon=10e-4):
     check_limit = (patience-1)*num_step_per_val
     if current_step < check_limit:
         return False
     current_loss = loss_history[current_step]
     for step in range(current_step, current_step - check_limit, -num_step_per_val):
         previous_loss = loss_history[step - num_step_per_val]
-        if current_loss < previous_loss:
+        if current_loss < previous_loss - epsilon:
             return False
         current_loss = previous_loss
     return True

@@ -22,7 +22,7 @@ class SoftmaxModel:
 
     def __init__(self, l2_reg_lambda: float):
         # Define number of input nodes
-        self.I = None
+        self.I = 785
 
         # Define number of output nodes
         self.num_outputs = None
@@ -71,8 +71,9 @@ def one_hot_encode(Y: np.ndarray, num_classes: int):
     Returns:
         Y: shape [Num examples, num classes]
     """
-    # TODO implement this function (Task 3a)
-    raise NotImplementedError
+    i = np.eye(num_classes)
+    r = i[Y.flatten()]
+    return r
 
 
 def gradient_approximation_test(model: SoftmaxModel, X: np.ndarray, Y: np.ndarray):

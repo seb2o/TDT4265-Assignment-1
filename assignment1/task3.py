@@ -16,9 +16,13 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: SoftmaxModel) 
     Returns:
         Accuracy (float)
     """
-    # TODO: Implement this function (task 3c)
-    accuracy = 0
-    return accuracy
+    # As explained in task 2, rint round .5 to 0 which isnt what the assignment asks, but it is way faster than round
+    # so the tradoff seems worth it
+    Y = model.forward(X)
+    Y_categorical = np.rint(Y)
+    correct_guess_array = np.all(Y_categorical == targets, axis=1)
+    correct_guess_count = np.count_nonzero(correct_guess_array)
+    return correct_guess_count/targets.shape[0]
 
 
 class SoftmaxTrainer(BaseTrainer):

@@ -11,7 +11,7 @@ class BaseTrainer:
             batch_size: int,
             shuffle_dataset: bool,
             X_train: np.ndarray, Y_train: np.ndarray,
-            X_val: np.ndarray, Y_val: np.ndarray, ) -> None:
+            X_val: np.ndarray, Y_val: np.ndarray,) -> None:
         """
             Initialize the trainer responsible for performing the gradient descent loop.
         """
@@ -73,6 +73,11 @@ class BaseTrainer:
         )
 
         global_step = 0
+        # user variables
+        min_loss = 1.0
+        loss_index = 0
+        min_index = 0
+        # end of user variables
         for epoch in range(num_epochs):
             train_loader = utils.batch_loader(
                 self.X_train, self.Y_train, self.batch_size, shuffle=self.shuffle_dataset)
@@ -87,24 +92,16 @@ class BaseTrainer:
                     train_history["accuracy"][global_step] = accuracy_train
                     val_history["loss"][global_step] = val_loss
                     val_history["accuracy"][global_step] = accuracy_val
-                    if early_stopping_check(val_history["loss"], global_step, num_steps_per_val):
-                        print(f"Stopped training at step {global_step + 1} due to validation not improving anymore ")
+
+                    # TODO (Task 2d): Implement early stopping here.
+                    # You can access the validation loss in val_history["loss"]
+                    if val_loss < min_loss:
+                        min_loss = val_loss
+                        min_index = loss_index
+                    if min_index < loss_index - 9:
+                        print("Early Stopping. Current Epoch: ", epoch)
                         return train_history, val_history
+                    loss_index += 1
+
                 global_step += 1
         return train_history, val_history
-
-    # helper function for early stopping
-    # go trough the list
-
-
-def early_stopping_check(loss_history, current_step, num_step_per_val, patience=10, epsilon=0):
-    check_limit = (patience-1)*num_step_per_val
-    if current_step < check_limit:
-        return False
-    current_loss = loss_history[current_step]
-    for step in range(current_step, current_step - check_limit, -num_step_per_val):
-        previous_loss = loss_history[step - num_step_per_val]
-        if current_loss < previous_loss - epsilon:
-            return False
-        current_loss = previous_loss
-    return True

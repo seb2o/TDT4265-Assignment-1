@@ -25,10 +25,11 @@ def batch_loader(
     indices = list(range(len(X)))
 
     # TODO (task 2e) implement dataset shuffling here.
-
+    if shuffle:
+        indices = np.random.permutation(indices)
     for i in range(num_batches):
         # select a set of indices for each batch of samples
-        batch_indices = indices[i*batch_size:(i+1)*batch_size]
+        batch_indices = indices[i * batch_size:(i + 1) * batch_size]
         x = X[batch_indices]
         y = Y[batch_indices]
         # return both images (x) and labels (y)
@@ -124,8 +125,8 @@ def plot_loss(loss_dict: dict, label: str = None, npoints_to_average=1, plot_var
     loss_std = []
     steps = []
     for i in range(num_points):
-        points = loss[i*npoints_to_average:(i+1)*npoints_to_average]
-        step = global_steps[i*npoints_to_average + npoints_to_average//2]
+        points = loss[i * npoints_to_average:(i + 1) * npoints_to_average]
+        step = global_steps[i * npoints_to_average + npoints_to_average // 2]
         mean_loss.append(np.mean(points))
         loss_std.append(np.std(points))
         steps.append(step)

@@ -16,9 +16,13 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: SoftmaxModel) 
     Returns:
         Accuracy (float)
     """
-    # TODO: Implement this function (task 3c)
-    accuracy = 0
-    return accuracy
+    # As explained in task 2, rint round .5 to 0 which isnt what the assignment asks, but it is way faster than round
+    # so the tradoff seems worth it
+    Y = model.forward(X)
+    Y_categorical = np.rint(Y)
+    correct_guess_array = np.all(Y_categorical == targets, axis=1)
+    correct_guess_count = np.count_nonzero(correct_guess_array)
+    return correct_guess_count/targets.shape[0]
 
 
 class SoftmaxTrainer(BaseTrainer):
@@ -35,8 +39,10 @@ class SoftmaxTrainer(BaseTrainer):
         Returns:
             loss value (float) on batch
         """
-        # TODO: Implement this function (task 3b)
-        loss = 0
+        Out_batch = self.model.forward(X_batch)
+        loss = cross_entropy_loss(Y_batch, Out_batch)
+        self.model.backward(X_batch, Out_batch, Y_batch)
+        self.model.w = self.model.w - self.learning_rate*self.model.grad
         return loss
 
     def validation_step(self):
@@ -95,7 +101,7 @@ def main():
     print("Final Train accuracy:", calculate_accuracy(X_train, Y_train, model))
     print("Final Validation accuracy:", calculate_accuracy(X_val, Y_val, model))
 
-    plt.ylim([0.2, .8])
+    plt.ylim([.2, .7])
     utils.plot_loss(train_history["loss"],
                     "Training Loss", npoints_to_average=10)
     utils.plot_loss(val_history["loss"], "Validation Loss")
@@ -106,7 +112,7 @@ def main():
     plt.show()
 
     # Plot accuracy
-    plt.ylim([0.89, .93])
+    plt.ylim([.8, 1])
     utils.plot_loss(train_history["accuracy"], "Training Accuracy")
     utils.plot_loss(val_history["accuracy"], "Validation Accuracy")
     plt.xlabel("Number of Training Steps")

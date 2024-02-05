@@ -12,20 +12,19 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
     Returns:
         Cross entropy error (float)
     """
-    # TODO implement this function (Task 3a)
     assert targets.shape == outputs.shape,\
         f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
-    raise NotImplementedError
+    return np.mean(-np.sum(targets*np.log(outputs), axis=1))
 
 
 class SoftmaxModel:
 
     def __init__(self, l2_reg_lambda: float):
         # Define number of input nodes
-        self.I = None
+        self.I = 785
 
         # Define number of output nodes
-        self.num_outputs = None
+        self.num_outputs = 10
         self.w = np.zeros((self.I, self.num_outputs))
         self.grad = None
 
@@ -38,8 +37,10 @@ class SoftmaxModel:
         Returns:
             y: output of model with shape [batch size, num_outputs]
         """
-        # TODO implement this function (Task 3a)
-        return None
+        z = np.dot(X, self.w)
+        exp_z = np.exp(z)
+        sum_exp = np.sum(exp_z, axis=1).reshape((-1, 1))
+        return np.divide(exp_z, sum_exp)
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
         """
@@ -50,12 +51,12 @@ class SoftmaxModel:
             outputs: outputs of model of shape: [batch size, num_outputs]
             targets: labels/targets of each image of shape: [batch size, num_classes]
         """
-        # TODO implement this function (Task 3a)
         # To implement L2 regularization task (4b) you can get the lambda value in self.l2_reg_lambda
         # which is defined in the constructor.
         assert targets.shape == outputs.shape,\
             f"Output shape: {outputs.shape}, targets: {targets.shape}"
-        self.grad = np.zeros_like(self.w)
+        error = outputs - targets
+        self.grad = np.divide(np.transpose(X) @ error, X.shape[0])
         assert self.grad.shape == self.w.shape,\
             f"Grad shape: {self.grad.shape}, w: {self.w.shape}"
 
@@ -71,8 +72,9 @@ def one_hot_encode(Y: np.ndarray, num_classes: int):
     Returns:
         Y: shape [Num examples, num classes]
     """
-    # TODO implement this function (Task 3a)
-    raise NotImplementedError
+    i = np.eye(num_classes)
+    r = i[Y.flatten()]
+    return r
 
 
 def gradient_approximation_test(model: SoftmaxModel, X: np.ndarray, Y: np.ndarray):

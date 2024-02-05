@@ -25,7 +25,7 @@ class SoftmaxModel:
         self.I = 785
 
         # Define number of output nodes
-        self.num_outputs = None
+        self.num_outputs = 10
         self.w = np.zeros((self.I, self.num_outputs))
         self.grad = None
 
@@ -38,8 +38,10 @@ class SoftmaxModel:
         Returns:
             y: output of model with shape [batch size, num_outputs]
         """
-        # TODO implement this function (Task 3a)
-        return None
+        z = np.dot(X, self.w)
+        exp_z = np.exp(z)
+        sum_exp = np.sum(exp_z, axis=1).reshape((-1, 1))
+        return np.divide(exp_z, sum_exp)
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
         """

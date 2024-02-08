@@ -56,7 +56,7 @@ class SoftmaxModel:
         assert targets.shape == outputs.shape,\
             f"Output shape: {outputs.shape}, targets: {targets.shape}"
         error = outputs - targets
-        self.grad = np.divide(np.transpose(X) @ error, X.shape[0])
+        self.grad = np.divide(np.transpose(X) @ error + 2*self.l2_reg_lambda*self.w, X.shape[0])
         assert self.grad.shape == self.w.shape,\
             f"Grad shape: {self.grad.shape}, w: {self.w.shape}"
 

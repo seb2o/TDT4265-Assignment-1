@@ -132,8 +132,22 @@ def main():
     train_history_reg01, val_history_reg01 = trainer.train(num_epochs)
     # You can finish the rest of task 4 below this point.
 
+    utils.plot_loss(train_history_reg01["accuracy"], "Training Accuracy")
+    utils.plot_loss(val_history_reg01["accuracy"], "Validation Accuracy")
+    plt.xlabel("Number of Training Steps")
+    plt.ylabel("Accuracy")
+    plt.legend()
+    plt.savefig("task4b_softmax_regularized_accuracy.png")
+    plt.show()
+
+
     # Plotting of softmax weights (Task 4b)
-    # plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
+    vannila_bias = model.w.T[:, -1]
+    vanilla_weight = np.concatenate(model.w.T[:, :-1].reshape(10,28,28) - vannila_bias[:, None, None], axis=1)
+    reg_bias = model1.w.T[:, -1]
+    reg_weight = np.concatenate(model1.w.T[:,:-1].reshape(10,28,28) - reg_bias[:, None, None], axis=1)
+    weight = np.vstack((vanilla_weight, reg_weight))
+    plt.imsave("task4b_softmax_weight.png", weight, cmap="gray")
 
     # Plotting of accuracy for difference values of lambdas (task 4c)
     l2_lambdas = [1, .1, .01, .001]

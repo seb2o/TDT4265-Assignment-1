@@ -43,6 +43,7 @@ class SoftmaxTrainer(BaseTrainer):
         loss = cross_entropy_loss(Y_batch, Out_batch)
         self.model.backward(X_batch, Out_batch, Y_batch)
         self.model.w = self.model.w - self.learning_rate*self.model.grad
+        self.model.zero_grad()
         return loss
 
     def validation_step(self):
@@ -122,7 +123,7 @@ def main():
     plt.show()
 
     # Train a model with L2 regularization (task 4b)
-
+    print("With L2 regularization")
     model1 = SoftmaxModel(l2_reg_lambda=1.0)
     trainer = SoftmaxTrainer(
         model1, learning_rate, batch_size, shuffle_dataset,

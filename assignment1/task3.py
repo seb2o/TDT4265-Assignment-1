@@ -157,7 +157,7 @@ def main():
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Accuracy")
     plt.title("Validation loss graph under different lambda values")
-    plt.savefig("task4c_reg_accuracy.png")
+    plt.savefig("task4c_l2_reg_accuracy.png")
     plt.show()
 
     plt.plot(tests_reg_lambda, w_norms, marker='o', linestyle='--')

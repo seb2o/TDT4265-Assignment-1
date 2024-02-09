@@ -39,7 +39,7 @@ class SoftmaxModel:
         """
         z = np.dot(X, self.w)
         exp_z = np.exp(z)
-        sum_exp = np.sum(exp_z, axis=1).reshape((-1, 1))
+        sum_exp = np.sum(exp_z, axis=1, keepdims=True)
         return np.divide(exp_z, sum_exp)
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
@@ -56,7 +56,7 @@ class SoftmaxModel:
         assert targets.shape == outputs.shape,\
             f"Output shape: {outputs.shape}, targets: {targets.shape}"
         error = outputs - targets
-        self.grad = np.divide(np.transpose(X) @ error, X.shape[0]) + self.l2_reg_lambda*self.w
+        self.grad = np.divide(np.transpose(X) @ error, X.shape[0]) + 2*self.l2_reg_lambda*self.w
         assert self.grad.shape == self.w.shape,\
             f"Grad shape: {self.grad.shape}, w: {self.w.shape}"
 

@@ -156,7 +156,8 @@ def main():
         utils.plot_loss(val_history["accuracy"], label=f"Lambda={reg_lambda}")
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Accuracy")
-    plt.title("Validation loss graph under different lambda values")
+    plt.title("Validation accuracy graph under different lambda values")
+    plt.legend()
     plt.savefig("task4c_l2_reg_accuracy.png")
     plt.show()
 
@@ -164,6 +165,7 @@ def main():
     plt.xlabel('lambda value ')
     plt.ylabel('L_2 norm of the weight matrix')
     plt.title('norm of the weigh matrix in terms of the regularization parameter')
+    plt.legend()
     plt.savefig("task4d_l2_reg_norms.png")
     plt.show()
 

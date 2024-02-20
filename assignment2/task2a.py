@@ -31,6 +31,20 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
     return np.mean(-np.sum(targets*np.log(outputs), axis=1))
 
 
+def sigmoid(Z: np.ndarray) -> np.ndarray:
+    """
+    Computes the sigmoid function of a layer Z
+    Args:
+        Z : ( batch_size, layer_size )
+
+    Returns: f(Z) , shape= (batch_size, layer_size)
+
+    """
+    exp = np.exp(Z)
+    sum_exp = np.sum(exp, axis=1, keepdims=True)
+    return exp / sum_exp
+
+
 class SoftmaxModel:
 
     def __init__(
@@ -54,6 +68,9 @@ class SoftmaxModel:
         # neurons_per_layer = [64, 10] indicates that we will have two layers:
         # A hidden layer with 64 neurons and a output layer with 10 neurons.
         self.neurons_per_layer = neurons_per_layer
+        self.n_hidden_layer = len(neurons_per_layer)
+        self.layer_output = [np.ndarray(0)]*(self.n_hidden_layer + 1)
+
 
         # Initialize the weights
         self.ws = []
@@ -73,10 +90,13 @@ class SoftmaxModel:
         Returns:
             y: output of model with shape [batch size, num_outputs]
         """
-        # TODO implement this function (Task 2b)
-        # HINT: For performing the backward pass, you can save intermediate activations in variables in the forward pass.
-        # such as self.hidden_layer_output = ...
-        return None
+
+        # multiply each layer output by the weights of the next layer. The first layer output is the input of the
+        # network and the last layer output is the output of the network
+        self.layer_output[0] = X
+        for layer_index in range(1, self.n_hidden_layer + 1):
+            self.layer_output[layer_index] = sigmoid(self.layer_output[layer_index - 1] @ self.ws[layer_index])
+        return self.layer_output[-1]
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
         """

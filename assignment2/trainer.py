@@ -94,7 +94,7 @@ class BaseTrainer:
                     if val_loss < min_loss:
                         min_loss = val_loss
                         min_index = loss_index
-                    if min_index < loss_index - 9:
+                    if min_index < loss_index - 49:
                         print("Early Stopping. Current Epoch: ", epoch)
                         return train_history, val_history
                     loss_index += 1

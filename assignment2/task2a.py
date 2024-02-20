@@ -13,7 +13,7 @@ def pre_process_images(X: np.ndarray):
         X: images of shape [batch size, 785] normalized as described in task2a
     """
     assert X.shape[1] == 784, f"X.shape[1]: {X.shape[1]}, should be 784"
-    # TODO implement this function (Task 2a)
+    X = np.column_stack((X, np.ones(X.shape[0])))
     return X
 
 
@@ -28,8 +28,7 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
     assert (
         targets.shape == outputs.shape
     ), f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
-    # TODO: Implement this function (copy from last assignment)
-    raise NotImplementedError
+    return np.mean(-np.sum(targets*np.log(outputs), axis=1))
 
 
 class SoftmaxModel:
@@ -46,7 +45,7 @@ class SoftmaxModel:
             1
         )  # Always reset random seed before weight init to get comparable results.
         # Define number of input nodes
-        self.I = None
+        self.I = 785
         self.use_improved_sigmoid = use_improved_sigmoid
         self.use_relu = use_relu
         self.use_improved_weight_init = use_improved_weight_init
@@ -112,8 +111,9 @@ def one_hot_encode(Y: np.ndarray, num_classes: int):
     Returns:
         Y: shape [Num examples, num classes]
     """
-    # TODO: Implement this function (copy from last assignment)
-    raise NotImplementedError
+    i = np.eye(num_classes)
+    r = i[Y.flatten()]
+    return r
 
 
 def gradient_approximation_test(model: SoftmaxModel, X: np.ndarray, Y: np.ndarray):

@@ -13,7 +13,7 @@ def pre_process_images(X: np.ndarray):
         X: images of shape [batch size, 785] normalized as described in task2a
     """
     assert X.shape[1] == 784, f"X.shape[1]: {X.shape[1]}, should be 784"
-    # TODO implement this function (Task 2a)
+    X = np.column_stack((X, np.ones(X.shape[0])))
     return X
 
 

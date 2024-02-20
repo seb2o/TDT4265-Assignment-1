@@ -28,8 +28,7 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
     assert (
         targets.shape == outputs.shape
     ), f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
-    # TODO: Implement this function (copy from last assignment)
-    raise NotImplementedError
+    return np.mean(-np.sum(targets*np.log(outputs), axis=1))
 
 
 class SoftmaxModel:

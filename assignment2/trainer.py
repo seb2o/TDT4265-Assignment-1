@@ -73,6 +73,9 @@ class BaseTrainer:
         )
 
         global_step = 0
+        min_loss = 1.0
+        loss_index = 0
+        min_index = 0
         for epoch in range(num_epochs):
             train_loader = utils.batch_loader(
                 self.X_train, self.Y_train, self.batch_size, shuffle=self.shuffle_dataset)
@@ -88,5 +91,12 @@ class BaseTrainer:
                     val_history["loss"][global_step] = val_loss
                     val_history["accuracy"][global_step] = accuracy_val
                     # TODO: Implement early stopping (copy from last assignment)
+                    if val_loss < min_loss:
+                        min_loss = val_loss
+                        min_index = loss_index
+                    if min_index < loss_index - 9:
+                        print("Early Stopping. Current Epoch: ", epoch)
+                        return train_history, val_history
+                    loss_index += 1
                 global_step += 1
         return train_history, val_history

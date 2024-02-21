@@ -68,8 +68,8 @@ class SoftmaxModel:
         # neurons_per_layer = [64, 10] indicates that we will have two layers:
         # A hidden layer with 64 neurons and a output layer with 10 neurons.
         self.neurons_per_layer = neurons_per_layer
-        self.n_hidden_layer = len(neurons_per_layer)
-        self.layer_output = [np.ndarray(0)]*(self.n_hidden_layer + 1)
+        self.n_layers = len(neurons_per_layer)
+        self.layer_output = [np.ndarray(0)]*(self.n_layers + 1)
 
 
         # Initialize the weights
@@ -94,7 +94,7 @@ class SoftmaxModel:
         # multiply each layer output by the weights of the next layer. The first layer output is the input of the
         # network and the last layer output is the output of the network
         self.layer_output[0] = X
-        for layer_index in range(1, self.n_hidden_layer + 1):
+        for layer_index in range(1, self.n_layers + 1):
             self.layer_output[layer_index] = sigmoid(self.layer_output[layer_index - 1] @ self.ws[layer_index])
         return self.layer_output[-1]
 

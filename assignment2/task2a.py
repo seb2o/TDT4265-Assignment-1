@@ -16,12 +16,14 @@ def pre_process_images(X: np.ndarray):
     std = 78.56748998339798
     assert X.shape[1] == 784, f"X.shape[1]: {X.shape[1]}, should be 784"
     X = np.column_stack((X, np.ones(X.shape[0])))
+    result = (X - mean) / std
     # experimental
     mX = np.mean(X, axis=0)
     mX = X - mX
     stdX = np.std(X, axis=0)
     stdX = np.nan_to_num(mX / stdX)
-    return (X - mean) / std
+    # stdX = result
+    return result
 
 
 def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):

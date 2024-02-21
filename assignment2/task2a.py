@@ -12,9 +12,16 @@ def pre_process_images(X: np.ndarray):
     Returns:
         X: images of shape [batch size, 785] normalized as described in task2a
     """
+    mean = 33.318421449829934
+    std = 78.56748998339798
     assert X.shape[1] == 784, f"X.shape[1]: {X.shape[1]}, should be 784"
     X = np.column_stack((X, np.ones(X.shape[0])))
-    return X
+    # experimental
+    mX = np.mean(X, axis=0)
+    mX = X - mX
+    stdX = np.std(X, axis=0)
+    stdX = np.nan_to_num(mX / stdX)
+    return (X - mean) / std
 
 
 def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
@@ -28,7 +35,7 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
     assert (
         targets.shape == outputs.shape
     ), f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
-    return np.mean(-np.sum(targets*np.log(outputs), axis=1))
+    return np.mean(-np.sum(targets * np.log(outputs), axis=1))
 
 
 def sigmoid(Z: np.ndarray) -> np.ndarray:
@@ -69,8 +76,7 @@ class SoftmaxModel:
         # A hidden layer with 64 neurons and a output layer with 10 neurons.
         self.neurons_per_layer = neurons_per_layer
         self.n_hidden_layer = len(neurons_per_layer)
-        self.layer_output = [np.ndarray(0)]*(self.n_hidden_layer + 1)
-
+        self.layer_output = [np.ndarray(0)] * (self.n_hidden_layer + 1)
 
         # Initialize the weights
         self.ws = []

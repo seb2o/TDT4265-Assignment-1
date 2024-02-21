@@ -53,10 +53,12 @@ class SoftmaxTrainer(BaseTrainer):
         Returns:
             loss value (float) on batch
         """
-        # TODO: Implement this function (task 2c)
-        loss = 0
-
-        return loss
+        self.model.zero_grad()
+        output = self.model.forward(X_batch)
+        self.model.backward(X_batch, output, Y_batch)
+        for layer_index in self.model.n_layers:
+            self.model.ws[layer_index] -= self.learning_rate*self.model.grads[layer_index]
+        return cross_entropy_loss(Y_batch, output)
 
     def validation_step(self):
         """

@@ -35,6 +35,11 @@ def broacasted_sigmoid(Z: np.ndarray) -> np.ndarray:
     return np.divide(1, 1 + np.exp(-Z))
 
 
+def broacasted_sigmoid_prime(Z: np.ndarray) -> np.ndarray:
+    fz = broacasted_sigmoid(Z)
+    return fz*(1 - fz)
+
+
 def softmax(Z: np.ndarray) -> np.ndarray:
     exp_z = np.exp(Z)
     sum_exp = np.sum(exp_z, axis=1, keepdims=True)
@@ -64,7 +69,10 @@ class SoftmaxModel:
         # neurons_per_layer = [64, 10] indicates that we will have two layers:
         # A hidden layer with 64 neurons and a output layer with 10 neurons.
         self.neurons_per_layer = neurons_per_layer
+
+        # store number of layers because often accessed
         self.n_layers = len(neurons_per_layer)
+        # store the intermediate results z for each layer.
         self.layers_z = [np.ndarray(0)] * self.n_layers
 
         # Initialize the weights
@@ -102,13 +110,23 @@ class SoftmaxModel:
             outputs: outputs of model of shape: [batch size, num_outputs]
             targets: labels/targets of each image of shape: [batch size, num_classes]
         """
-        # TODO implement this function (Task 2b)
         assert (
                 targets.shape == outputs.shape
         ), f"Output shape: {outputs.shape}, targets: {targets.shape}"
         # A list of gradients.
         # For example, self.grads[0] will be the gradient for the first hidden layer
-        self.grads = []
+        self.grads = [np.ndarray(0)] * self.n_layers
+        delta = [np.ndarray(0)] * self.n_layers
+
+        # Compute the error vectors, starting with the last layer.
+        delta[-1] = outputs - targets
+        for j in range(2, self.n_layers + 1):
+            delta[-j] = broacasted_sigmoid_prime(self.layers_z[-j]) * (delta[-j + 1] @ self.ws[-j + 1].T)
+
+        self.grads[0] = (X.T @ delta[0]) / X.shape[0]
+        for j in range(1, self.n_layers):
+            self.grads[j] = (broacasted_sigmoid(self.layers_z[j - 1]).T @ delta[j])/X.shape[0]
+
         for grad, w in zip(self.grads, self.ws):
             assert (
                     grad.shape == w.shape

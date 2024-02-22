@@ -19,10 +19,8 @@ def calculate_accuracy(
         Accuracy (float)
     """
     output = model.forward(X)
-    # note that this doesnt produce exactly what is asked since rint will round .5 components to 0 instead of 1.
-    # however the speed gain compared to looping to apply a function to each component seems enough to justify this
-    correct_guess_count = np.count_nonzero(np.rint(output) == targets)
-    return correct_guess_count / targets.shape[0]
+    output_categorical = one_hot_encode(np.argmax(output, axis=1), 10)
+    return np.mean(targets == output_categorical)
 
 
 class SoftmaxTrainer(BaseTrainer):
@@ -56,7 +54,7 @@ class SoftmaxTrainer(BaseTrainer):
         self.model.zero_grad()
         output = self.model.forward(X_batch)
         self.model.backward(X_batch, output, Y_batch)
-        for layer_index in self.model.n_layers:
+        for layer_index in range(self.model.n_layers):
             self.model.ws[layer_index] -= self.learning_rate*self.model.grads[layer_index]
         return cross_entropy_loss(Y_batch, output)
 

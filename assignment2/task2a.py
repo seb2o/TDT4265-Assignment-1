@@ -4,7 +4,6 @@ import typing
 
 np.random.seed(1)
 
-
 def pre_process_images(X: np.ndarray):
     """
     Args:
@@ -12,9 +11,18 @@ def pre_process_images(X: np.ndarray):
     Returns:
         X: images of shape [batch size, 785] normalized as described in task2a
     """
+    mean = 33.318421449829934
+    std = 78.56748998339798
     assert X.shape[1] == 784, f"X.shape[1]: {X.shape[1]}, should be 784"
     X = np.column_stack((X, np.ones(X.shape[0])))
-    return X
+    result = (X - mean) / std
+    # experimental
+    mX = np.mean(X, axis=0)
+    mX = X - mX
+    stdX = np.std(X, axis=0)
+    stdX = np.nan_to_num(mX / stdX)
+    # stdX = result
+    return result
 
 
 def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):

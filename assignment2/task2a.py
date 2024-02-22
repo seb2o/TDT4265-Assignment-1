@@ -17,10 +17,10 @@ def pre_process_images(X: np.ndarray):
     X = np.column_stack((X, np.ones(X.shape[0])))
     result = (X - mean) / std
     # experimental
-    mX = np.mean(X, axis=0)
-    mX = X - mX
-    stdX = np.std(X, axis=0)
-    stdX = np.nan_to_num(mX / stdX)
+    # mX = np.mean(X, axis=0)
+    # mX = X - mX
+    # stdX = np.std(X, axis=0)
+    # stdX = np.nan_to_num(mX / stdX)
     # stdX = result
     return result
 

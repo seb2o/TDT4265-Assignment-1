@@ -4,6 +4,7 @@ import typing
 
 np.random.seed(1)
 
+
 def pre_process_images(X: np.ndarray):
     """
     Args:
@@ -21,7 +22,7 @@ def pre_process_images(X: np.ndarray):
     # mX = X - mX
     # stdX = np.std(X, axis=0)
     # stdX = np.nan_to_num(mX / stdX)
-    # stdX = result
+    # result = stdX
     return result
 
 
@@ -34,7 +35,7 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
         Cross entropy error (float)
     """
     assert (
-            targets.shape == outputs.shape
+        targets.shape == outputs.shape
     ), f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
     return -np.mean(np.sum(targets * np.log(outputs), axis=1))
 
@@ -45,7 +46,7 @@ def broacasted_sigmoid(Z: np.ndarray) -> np.ndarray:
 
 def broacasted_sigmoid_prime(Z: np.ndarray) -> np.ndarray:
     fz = broacasted_sigmoid(Z)
-    return fz*(1 - fz)
+    return fz * (1 - fz)
 
 
 def softmax(Z: np.ndarray) -> np.ndarray:
@@ -85,11 +86,12 @@ class SoftmaxModel:
 
         # Initialize the weights
         self.ws = []
-        prev = self.I
+        prev = self.I - 1
         for size in self.neurons_per_layer:
-            w_shape = (prev, size)
+            w_shape = (prev + 1, size)
             print("Initializing weight to shape:", w_shape)
             w = np.random.uniform(-1, 1, w_shape)
+            # w[w_shape[0], :] = np.ones(w_shape[0])
             self.ws.append(w)
             prev = size
         self.grads = [None for i in range(len(self.ws))]
@@ -106,7 +108,10 @@ class SoftmaxModel:
         # network and the last layer output is the output of the network
         self.layers_z[0] = X @ self.ws[0]
         for layer_index in range(1, self.n_layers):
-            self.layers_z[layer_index] = broacasted_sigmoid(self.layers_z[layer_index - 1]) @ self.ws[layer_index]
+            prev_layer = broacasted_sigmoid(self.layers_z[layer_index - 1])
+            prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
+            self.layers_z[layer_index] = prev_layer @ self.ws[layer_index]
+            # self.layers_z[layer_index] = broacasted_sigmoid(self.layers_z[layer_index - 1]) @ self.ws[layer_index]
         return softmax(self.layers_z[-1])
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
@@ -119,7 +124,7 @@ class SoftmaxModel:
             targets: labels/targets of each image of shape: [batch size, num_classes]
         """
         assert (
-                targets.shape == outputs.shape
+            targets.shape == outputs.shape
         ), f"Output shape: {outputs.shape}, targets: {targets.shape}"
 
         batch_size = X.shape[0]
@@ -131,15 +136,22 @@ class SoftmaxModel:
         # Compute the error vectors, starting with the last layer.
         delta[-1] = outputs - targets
         for j in range(2, self.n_layers + 1):
-            delta[-j] = broacasted_sigmoid_prime(self.layers_z[-j]) * (delta[-j + 1] @ self.ws[-j + 1].T)
+            prev_layer = broacasted_sigmoid_prime(self.layers_z[-j])
+            prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
+            delta[-j] = prev_layer * (delta[-j + 1] @ self.ws[-j + 1].T)
 
-        self.grads[0] = (X.T @ delta[0]) / batch_size
+        self.grads[0] = (X.T @ delta[0][:, :-1]) / batch_size
         for j in range(1, self.n_layers):
-            self.grads[j] = (broacasted_sigmoid(self.layers_z[j - 1]).T @ delta[j])/batch_size
+            prev_layer = broacasted_sigmoid(self.layers_z[j - 1])
+            prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
+            if (j < self.n_layers - 1):
+                self.grads[j] = (prev_layer.T @ delta[j][:, :-1]) / batch_size
+            else:
+                self.grads[j] = (prev_layer.T @ delta[j]) / batch_size
 
         for grad, w in zip(self.grads, self.ws):
             assert (
-                    grad.shape == w.shape
+                grad.shape == w.shape
             ), f"Expected the same shape. Grad shape: {grad.shape}, w: {w.shape}."
 
     def zero_grad(self) -> None:
@@ -186,7 +198,7 @@ def gradient_approximation_test(model: SoftmaxModel, X: np.ndarray, Y: np.ndarra
                 logits = model.forward(X)
                 model.backward(X, logits, Y)
                 difference = gradient_approximation - \
-                             model.grads[layer_idx][i, j]
+                    model.grads[layer_idx][i, j]
                 assert abs(difference) <= epsilon ** 1, (
                     f"Calculated gradient is incorrect. "
                     f"Layer IDX = {layer_idx}, i={i}, j={j}.\n"
@@ -202,14 +214,14 @@ def main():
     Y[0, 0] = 3
     Y = one_hot_encode(Y, 10)
     assert (
-            Y[0, 3] == 1 and Y.sum() == 1
+        Y[0, 3] == 1 and Y.sum() == 1
     ), f"Expected the vector to be [0,0,0,1,0,0,0,0,0,0], but got {Y}"
 
     X_train, Y_train, *_ = utils.load_full_mnist()
     X_train = pre_process_images(X_train)
     Y_train = one_hot_encode(Y_train, 10)
     assert (
-            X_train.shape[1] == 785
+        X_train.shape[1] == 785
     ), f"Expected X_train to have 785 elements per image. Shape was: {X_train.shape}"
 
     neurons_per_layer = [64, 10]

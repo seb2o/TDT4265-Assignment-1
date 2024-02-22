@@ -69,7 +69,7 @@ class SoftmaxModel:
             1
         )  # Always reset random seed before weight init to get comparable results.
         # Define number of input nodes
-        self.I = 785
+        self.I = 784
         self.use_improved_sigmoid = use_improved_sigmoid
         self.use_relu = use_relu
         self.use_improved_weight_init = use_improved_weight_init
@@ -86,12 +86,11 @@ class SoftmaxModel:
 
         # Initialize the weights
         self.ws = []
-        prev = self.I - 1
+        prev = self.I
         for size in self.neurons_per_layer:
             w_shape = (prev + 1, size)
             print("Initializing weight to shape:", w_shape)
             w = np.random.uniform(-1, 1, w_shape)
-            # w[w_shape[0], :] = np.ones(w_shape[0])
             self.ws.append(w)
             prev = size
         self.grads = [None for i in range(len(self.ws))]
@@ -144,7 +143,7 @@ class SoftmaxModel:
         for j in range(1, self.n_layers):
             prev_layer = broacasted_sigmoid(self.layers_z[j - 1])
             prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
-            if (j < self.n_layers - 1):
+            if j < self.n_layers - 1:
                 self.grads[j] = (prev_layer.T @ delta[j][:, :-1]) / batch_size
             else:
                 self.grads[j] = (prev_layer.T @ delta[j]) / batch_size

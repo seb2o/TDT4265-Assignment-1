@@ -43,7 +43,7 @@ def broacasted_sigmoid_prime(Z: np.ndarray) -> np.ndarray:
 def softmax(Z: np.ndarray) -> np.ndarray:
     exp_z = np.exp(Z)
     sum_exp = np.sum(exp_z, axis=1, keepdims=True)
-    return exp_z / sum_exp
+    return np.divide(exp_z, sum_exp)
 
 
 class SoftmaxModel:
@@ -113,19 +113,21 @@ class SoftmaxModel:
         assert (
                 targets.shape == outputs.shape
         ), f"Output shape: {outputs.shape}, targets: {targets.shape}"
+
+        batch_size = X.shape[0]
         # A list of gradients.
         # For example, self.grads[0] will be the gradient for the first hidden layer
-        self.grads = [np.ndarray(0)] * self.n_layers
-        delta = [np.ndarray(0)] * self.n_layers
+        self.grads = [np.zeros_like(layer) for layer in self.ws]
+        delta = [np.zeros_like(layer) for layer in self.ws]
 
         # Compute the error vectors, starting with the last layer.
         delta[-1] = outputs - targets
         for j in range(2, self.n_layers + 1):
             delta[-j] = broacasted_sigmoid_prime(self.layers_z[-j]) * (delta[-j + 1] @ self.ws[-j + 1].T)
 
-        self.grads[0] = (X.T @ delta[0]) / X.shape[0]
+        self.grads[0] = (X.T @ delta[0]) / batch_size
         for j in range(1, self.n_layers):
-            self.grads[j] = (broacasted_sigmoid(self.layers_z[j - 1]).T @ delta[j])/X.shape[0]
+            self.grads[j] = (broacasted_sigmoid(self.layers_z[j - 1]).T @ delta[j])/batch_size
 
         for grad, w in zip(self.grads, self.ws):
             assert (

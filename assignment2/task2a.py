@@ -69,6 +69,8 @@ class SoftmaxModel:
             1
         )  # Always reset random seed before weight init to get comparable results.
         # Define number of input nodes
+        # We reduce the input layer back to its original dimension but add
+        # an extra bias when initializing the weight matrices
         self.I = 784
         self.use_improved_sigmoid = use_improved_sigmoid
         self.use_relu = use_relu
@@ -88,6 +90,7 @@ class SoftmaxModel:
         self.ws = []
         prev = self.I
         for size in self.neurons_per_layer:
+            # add bias
             w_shape = (prev + 1, size)
             print("Initializing weight to shape:", w_shape)
             w = np.random.uniform(-1, 1, w_shape)
@@ -108,9 +111,9 @@ class SoftmaxModel:
         self.layers_z[0] = X @ self.ws[0]
         for layer_index in range(1, self.n_layers):
             prev_layer = broacasted_sigmoid(self.layers_z[layer_index - 1])
+            # we add the bias during forward
             prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
             self.layers_z[layer_index] = prev_layer @ self.ws[layer_index]
-            # self.layers_z[layer_index] = broacasted_sigmoid(self.layers_z[layer_index - 1]) @ self.ws[layer_index]
         return softmax(self.layers_z[-1])
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
@@ -136,9 +139,11 @@ class SoftmaxModel:
         delta[-1] = outputs - targets
         for j in range(2, self.n_layers + 1):
             prev_layer = broacasted_sigmoid_prime(self.layers_z[-j])
+            # we add the bias for updating it's weight
             prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
             delta[-j] = prev_layer * (delta[-j + 1] @ self.ws[-j + 1].T)
 
+        # we do however remove the bias when going backwards
         self.grads[0] = (X.T @ delta[0][:, :-1]) / batch_size
         for j in range(1, self.n_layers):
             prev_layer = broacasted_sigmoid(self.layers_z[j - 1])
@@ -146,6 +151,7 @@ class SoftmaxModel:
             if j < self.n_layers - 1:
                 self.grads[j] = (prev_layer.T @ delta[j][:, :-1]) / batch_size
             else:
+                # the output layer has no bias
                 self.grads[j] = (prev_layer.T @ delta[j]) / batch_size
 
         for grad, w in zip(self.grads, self.ws):

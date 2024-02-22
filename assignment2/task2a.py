@@ -17,7 +17,11 @@ def pre_process_images(X: np.ndarray):
     assert X.shape[1] == 784, f"X.shape[1]: {X.shape[1]}, should be 784"
     X = np.column_stack((X, np.ones(X.shape[0])))
     result = (X - mean) / std
-    # experimental
+    """
+    The paper states input should be normalized per channel,
+    so we implemented this for test reasons in the commented section.
+    It performed worse.
+    """
     # mX = np.mean(X, axis=0)
     # mX = X - mX
     # stdX = np.std(X, axis=0)

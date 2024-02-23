@@ -46,17 +46,17 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
 
 def broacasted_sigmoid(Z: np.ndarray, improved: bool) -> np.ndarray:
     if improved:
-        return 1.7159 * np.tanh(2 / 3 * Z)
+        return 1.7159 * np.tanh((2 / 3) * Z)
     else:
         return np.divide(1, 1 + np.exp(-Z))
 
 
 def broacasted_sigmoid_prime(Z: np.ndarray, improved: bool) -> np.ndarray:
-    fz = broacasted_sigmoid(Z, improved)
     if improved:
         # 1 - tanh^2(Z)
-        return 1 - fz * fz
+        return 1.7159 * 2 / 3 * (1 - np.square(np.tanh((2 / 3) * Z)))
     else:
+        fz = broacasted_sigmoid(Z, improved)
         return fz * (1 - fz)
 
 
@@ -155,11 +155,11 @@ class SoftmaxModel:
         delta[-1] = outputs - targets
         for j in range(2, self.n_layers + 1):
             prev_layer = broacasted_sigmoid_prime(self.layers_z[-j], self.use_improved_sigmoid)
-            # we add the bias for updating it's weight
+            # we add the bias for updating its weight
             prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
             delta[-j] = prev_layer * (delta[-j + 1] @ self.ws[-j + 1].T)
 
-        # we do however remove the bias when going backwards
+        # we do however remove the bias when stepping backwards
         self.grads[0] = (X.T @ delta[0][:, :-1]) / batch_size
         for j in range(1, self.n_layers):
             prev_layer = broacasted_sigmoid(self.layers_z[j - 1], self.use_improved_sigmoid)

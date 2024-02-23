@@ -97,7 +97,12 @@ class SoftmaxModel:
             # add bias
             w_shape = (prev + 1, size)
             print("Initializing weight to shape:", w_shape)
-            w = np.random.uniform(-1, 1, w_shape)
+            if use_improved_weight_init:
+                w = np.random.normal(0, 1 / np.sqrt(prev), w_shape)
+            else:
+                w = np.random.uniform(-1, 1, w_shape)
+            # init bias to zero
+            w[-1, :] = np.zeros(size)
             self.ws.append(w)
             prev = size
         self.grads = [None for i in range(len(self.ws))]

@@ -55,7 +55,7 @@ class SoftmaxTrainer(BaseTrainer):
         output = self.model.forward(X_batch)
         self.model.backward(X_batch, output, Y_batch)
         for layer_index in range(self.model.n_layers):
-            self.model.ws[layer_index] -= self.learning_rate*self.model.grads[layer_index]
+            self.model.ws[layer_index] -= self.learning_rate * self.model.grads[layer_index]
         return cross_entropy_loss(Y_batch, output)
 
     def validation_step(self):
@@ -141,7 +141,7 @@ def main():
     plt.ylabel("Cross Entropy Loss - Average")
     # Plot accuracy
     plt.subplot(1, 2, 2)
-    plt.ylim([0.8, 0.99])
+    plt.ylim([0.8, 1.0])
     utils.plot_loss(train_history["accuracy"], "Training Accuracy")
     utils.plot_loss(val_history["accuracy"], "Validation Accuracy")
     plt.xlabel("Number of Training Steps")

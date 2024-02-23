@@ -157,7 +157,11 @@ class SoftmaxModel:
             prev_layer = broacasted_sigmoid_prime(self.layers_z[-j], self.use_improved_sigmoid)
             # we add the bias for updating its weight
             prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
-            delta[-j] = prev_layer * (delta[-j + 1] @ self.ws[-j + 1].T)
+            # print(delta[-j + 1].shape, " ", self.ws[-j + 1].T.shape)
+            if j == 2:
+                delta[-j] = prev_layer * (delta[-j + 1] @ self.ws[-j + 1].T)
+            else:
+                delta[-j] = prev_layer * (delta[-j + 1][:, :-1] @ self.ws[-j + 1].T)
 
         # we do however remove the bias when stepping backwards
         self.grads[0] = (X.T @ delta[0][:, :-1]) / batch_size

@@ -55,7 +55,10 @@ class SoftmaxTrainer(BaseTrainer):
         output = self.model.forward(X_batch)
         self.model.backward(X_batch, output, Y_batch)
         for layer_index in range(self.model.n_layers):
-            self.model.ws[layer_index] -= self.learning_rate * self.model.grads[layer_index]
+            self.model.ws[layer_index] -= self.learning_rate * \
+                (self.model.grads[layer_index] + self.use_momentum *
+                 self.momentum_gamma * self.previous_grads[layer_index])
+        self.previous_grads = self.model.grads
         return cross_entropy_loss(Y_batch, output)
 
     def validation_step(self):

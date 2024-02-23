@@ -44,13 +44,20 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
     return -np.mean(np.sum(targets * np.log(outputs), axis=1))
 
 
-def broacasted_sigmoid(Z: np.ndarray) -> np.ndarray:
-    return np.divide(1, 1 + np.exp(-Z))
+def broacasted_sigmoid(Z: np.ndarray, improved: bool) -> np.ndarray:
+    if improved:
+        return 1.7159 * np.tanh(2 / 3 * Z)
+    else:
+        return np.divide(1, 1 + np.exp(-Z))
 
 
-def broacasted_sigmoid_prime(Z: np.ndarray) -> np.ndarray:
-    fz = broacasted_sigmoid(Z)
-    return fz * (1 - fz)
+def broacasted_sigmoid_prime(Z: np.ndarray, improved: bool) -> np.ndarray:
+    fz = broacasted_sigmoid(Z, improved)
+    if improved:
+        # 1 - tanh^2(Z)
+        return 1 - fz * fz
+    else:
+        return fz * (1 - fz)
 
 
 def softmax(Z: np.ndarray) -> np.ndarray:
@@ -119,7 +126,7 @@ class SoftmaxModel:
         # network and the last layer output is the output of the network
         self.layers_z[0] = X @ self.ws[0]
         for layer_index in range(1, self.n_layers):
-            prev_layer = broacasted_sigmoid(self.layers_z[layer_index - 1])
+            prev_layer = broacasted_sigmoid(self.layers_z[layer_index - 1], self.use_improved_sigmoid)
             # we add the bias during forward
             prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
             self.layers_z[layer_index] = prev_layer @ self.ws[layer_index]
@@ -147,7 +154,7 @@ class SoftmaxModel:
         # Compute the error vectors, starting with the last layer.
         delta[-1] = outputs - targets
         for j in range(2, self.n_layers + 1):
-            prev_layer = broacasted_sigmoid_prime(self.layers_z[-j])
+            prev_layer = broacasted_sigmoid_prime(self.layers_z[-j], self.use_improved_sigmoid)
             # we add the bias for updating it's weight
             prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
             delta[-j] = prev_layer * (delta[-j + 1] @ self.ws[-j + 1].T)
@@ -155,7 +162,7 @@ class SoftmaxModel:
         # we do however remove the bias when going backwards
         self.grads[0] = (X.T @ delta[0][:, :-1]) / batch_size
         for j in range(1, self.n_layers):
-            prev_layer = broacasted_sigmoid(self.layers_z[j - 1])
+            prev_layer = broacasted_sigmoid(self.layers_z[j - 1], self.use_improved_sigmoid)
             prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
             if j < self.n_layers - 1:
                 self.grads[j] = (prev_layer.T @ delta[j][:, :-1]) / batch_size

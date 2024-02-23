@@ -75,7 +75,7 @@ def main():
     )
     plt.ylim([0, 0.4])
     plt.subplot(1, 2, 2)
-    plt.ylim([0.85, 0.95])
+    plt.ylim([0.85, 1.0])
     utils.plot_loss(val_history["accuracy"], "Task 2 Model")
     utils.plot_loss(
         val_history_no_shuffle["accuracy"], "Task 2 Model - No Dataset Shuffling"

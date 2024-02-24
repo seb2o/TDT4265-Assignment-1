@@ -18,9 +18,9 @@ def calculate_accuracy(
     Returns:
         Accuracy (float)
     """
-    # TODO: Implement this function (copy from last assignment)
-    accuracy = 0
-    return accuracy
+    output = model.forward(X)
+    output_categorical = one_hot_encode(np.argmax(output, axis=1), 10)
+    return np.mean(targets == output_categorical)
 
 
 class SoftmaxTrainer(BaseTrainer):
@@ -51,10 +51,15 @@ class SoftmaxTrainer(BaseTrainer):
         Returns:
             loss value (float) on batch
         """
-        # TODO: Implement this function (task 2c)
-        loss = 0
-
-        return loss
+        self.model.zero_grad()
+        output = self.model.forward(X_batch)
+        self.model.backward(X_batch, output, Y_batch)
+        for layer_index in range(self.model.n_layers):
+            self.previous_grads[layer_index] = self.model.grads[layer_index] + \
+                self.use_momentum * self.momentum_gamma * self.previous_grads[layer_index]
+            self.model.ws[layer_index] -= self.learning_rate * self.previous_grads[layer_index]
+        self.previous_grads = self.model.grads
+        return cross_entropy_loss(Y_batch, output)
 
     def validation_step(self):
         """
@@ -139,7 +144,7 @@ def main():
     plt.ylabel("Cross Entropy Loss - Average")
     # Plot accuracy
     plt.subplot(1, 2, 2)
-    plt.ylim([0.8, 0.99])
+    plt.ylim([0.8, 1.0])
     utils.plot_loss(train_history["accuracy"], "Training Accuracy")
     utils.plot_loss(val_history["accuracy"], "Validation Accuracy")
     plt.xlabel("Number of Training Steps")

@@ -14,7 +14,7 @@ def main():
     shuffle_data = True
 
     use_improved_sigmoid = False
-    use_improved_weight_init = False
+    use_improved_weight_init = True
     use_momentum = False
     use_relu = False
 
@@ -46,7 +46,7 @@ def main():
     # For comparison, show all loss/accuracy curves in the same plot
     # YOU CAN DELETE EVERYTHING BELOW!
 
-    shuffle_data = False
+    use_improved_weight_init = False
 
     # Train a new model with new parameters
     model_no_shuffle = SoftmaxModel(
@@ -75,13 +75,14 @@ def main():
     )
     plt.ylim([0, 0.4])
     plt.subplot(1, 2, 2)
-    plt.ylim([0.85, 0.95])
+    plt.ylim([0.85, 1.0])
     utils.plot_loss(val_history["accuracy"], "Task 2 Model")
     utils.plot_loss(
         val_history_no_shuffle["accuracy"], "Task 2 Model - No Dataset Shuffling"
     )
     plt.ylabel("Validation Accuracy")
     plt.legend()
+    plt.savefig("task3a_idk.png")
     plt.show()
 
 

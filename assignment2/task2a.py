@@ -12,9 +12,22 @@ def pre_process_images(X: np.ndarray):
     Returns:
         X: images of shape [batch size, 785] normalized as described in task2a
     """
+    mean = 33.318421449829934
+    std = 78.56748998339798
     assert X.shape[1] == 784, f"X.shape[1]: {X.shape[1]}, should be 784"
     X = np.column_stack((X, np.ones(X.shape[0])))
-    return X
+    result = (X - mean) / std
+    """
+    The paper states input should be normalized per channel,
+    so we implemented this for test reasons in the commented section.
+    It performed worse.
+    """
+    # mX = np.mean(X, axis=0)
+    # mX = X - mX
+    # stdX = np.std(X, axis=0)
+    # stdX = np.nan_to_num(mX / stdX)
+    # result = stdX
+    return result
 
 
 def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
@@ -28,24 +41,48 @@ def cross_entropy_loss(targets: np.ndarray, outputs: np.ndarray):
     assert (
         targets.shape == outputs.shape
     ), f"Targets shape: {targets.shape}, outputs: {outputs.shape}"
-    return np.mean(-np.sum(targets*np.log(outputs), axis=1))
+    return -np.mean(np.sum(targets * np.log(outputs), axis=1))
+
+
+def broacasted_sigmoid(Z: np.ndarray, improved: bool) -> np.ndarray:
+    if improved:
+        return 1.7159 * np.tanh((2 / 3) * Z)
+    else:
+        return np.divide(1, 1 + np.exp(-Z))
+
+
+def broacasted_sigmoid_prime(Z: np.ndarray, improved: bool) -> np.ndarray:
+    if improved:
+        # 1 - tanh^2(Z)
+        return 1.7159 * 2 / 3 * (1 - np.square(np.tanh((2 / 3) * Z)))
+    else:
+        fz = broacasted_sigmoid(Z, improved)
+        return fz * (1 - fz)
+
+
+def softmax(Z: np.ndarray) -> np.ndarray:
+    exp_z = np.exp(Z)
+    sum_exp = np.sum(exp_z, axis=1, keepdims=True)
+    return np.divide(exp_z, sum_exp)
 
 
 class SoftmaxModel:
 
     def __init__(
-        self,
-        # Number of neurons per layer
-        neurons_per_layer: typing.List[int],
-        use_improved_sigmoid: bool,  # Task 3b hyperparameter
-        use_improved_weight_init: bool,  # Task 3a hyperparameter
-        use_relu: bool,  # Task 3c hyperparameter
+            self,
+            # Number of neurons per layer
+            neurons_per_layer: typing.List[int],
+            use_improved_sigmoid: bool,  # Task 3b hyperparameter
+            use_improved_weight_init: bool,  # Task 3a hyperparameter
+            use_relu: bool,  # Task 3c hyperparameter
     ):
         np.random.seed(
             1
         )  # Always reset random seed before weight init to get comparable results.
         # Define number of input nodes
-        self.I = 785
+        # We reduce the input layer back to its original dimension but add
+        # an extra bias when initializing the weight matrices
+        self.I = 784
         self.use_improved_sigmoid = use_improved_sigmoid
         self.use_relu = use_relu
         self.use_improved_weight_init = use_improved_weight_init
@@ -55,13 +92,24 @@ class SoftmaxModel:
         # A hidden layer with 64 neurons and a output layer with 10 neurons.
         self.neurons_per_layer = neurons_per_layer
 
+        # store number of layers because often accessed
+        self.n_layers = len(neurons_per_layer)
+        # store the intermediate results z for each layer.
+        self.layers_z = [np.ndarray(0)] * self.n_layers
+
         # Initialize the weights
         self.ws = []
         prev = self.I
         for size in self.neurons_per_layer:
-            w_shape = (prev, size)
+            # add bias
+            w_shape = (prev + 1, size)
             print("Initializing weight to shape:", w_shape)
-            w = np.zeros(w_shape)
+            if use_improved_weight_init:
+                w = np.random.normal(0, 1 / np.sqrt(prev), w_shape)
+            else:
+                w = np.random.uniform(-1, 1, w_shape)
+            # init bias to zero
+            w[-1, :] = np.zeros(size)
             self.ws.append(w)
             prev = size
         self.grads = [None for i in range(len(self.ws))]
@@ -73,10 +121,16 @@ class SoftmaxModel:
         Returns:
             y: output of model with shape [batch size, num_outputs]
         """
-        # TODO implement this function (Task 2b)
-        # HINT: For performing the backward pass, you can save intermediate activations in variables in the forward pass.
-        # such as self.hidden_layer_output = ...
-        return None
+
+        # multiply each layer output by the weights of the next layer. The first layer output is the input of the
+        # network and the last layer output is the output of the network
+        self.layers_z[0] = X @ self.ws[0]
+        for layer_index in range(1, self.n_layers):
+            prev_layer = broacasted_sigmoid(self.layers_z[layer_index - 1], self.use_improved_sigmoid)
+            # we add the bias during forward
+            prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
+            self.layers_z[layer_index] = prev_layer @ self.ws[layer_index]
+        return softmax(self.layers_z[-1])
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
         """
@@ -87,13 +141,39 @@ class SoftmaxModel:
             outputs: outputs of model of shape: [batch size, num_outputs]
             targets: labels/targets of each image of shape: [batch size, num_classes]
         """
-        # TODO implement this function (Task 2b)
         assert (
             targets.shape == outputs.shape
         ), f"Output shape: {outputs.shape}, targets: {targets.shape}"
+
+        batch_size = X.shape[0]
         # A list of gradients.
         # For example, self.grads[0] will be the gradient for the first hidden layer
-        self.grads = []
+        self.grads = [np.zeros_like(layer) for layer in self.ws]
+        delta = [np.zeros_like(layer) for layer in self.ws]
+
+        # Compute the error vectors, starting with the last layer.
+        delta[-1] = outputs - targets
+        for j in range(2, self.n_layers + 1):
+            prev_layer = broacasted_sigmoid_prime(self.layers_z[-j], self.use_improved_sigmoid)
+            # we add the bias for updating its weight
+            prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
+            # print(delta[-j + 1].shape, " ", self.ws[-j + 1].T.shape)
+            if j == 2:
+                delta[-j] = prev_layer * (delta[-j + 1] @ self.ws[-j + 1].T)
+            else:
+                delta[-j] = prev_layer * (delta[-j + 1][:, :-1] @ self.ws[-j + 1].T)
+
+        # we do however remove the bias when stepping backwards
+        self.grads[0] = (X.T @ delta[0][:, :-1]) / batch_size
+        for j in range(1, self.n_layers):
+            prev_layer = broacasted_sigmoid(self.layers_z[j - 1], self.use_improved_sigmoid)
+            prev_layer = np.column_stack((prev_layer, np.ones(prev_layer.shape[0])))
+            if j < self.n_layers - 1:
+                self.grads[j] = (prev_layer.T @ delta[j][:, :-1]) / batch_size
+            else:
+                # the output layer has no bias
+                self.grads[j] = (prev_layer.T @ delta[j]) / batch_size
+
         for grad, w in zip(self.grads, self.ws):
             assert (
                 grad.shape == w.shape
@@ -144,7 +224,7 @@ def gradient_approximation_test(model: SoftmaxModel, X: np.ndarray, Y: np.ndarra
                 model.backward(X, logits, Y)
                 difference = gradient_approximation - \
                     model.grads[layer_idx][i, j]
-                assert abs(difference) <= epsilon**1, (
+                assert abs(difference) <= epsilon ** 1, (
                     f"Calculated gradient is incorrect. "
                     f"Layer IDX = {layer_idx}, i={i}, j={j}.\n"
                     f"Approximation: {gradient_approximation}, actual gradient: {model.grads[layer_idx][i, j]}\n"

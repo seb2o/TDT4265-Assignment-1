@@ -1,0 +1,231 @@
+\documentclass{article}
+
+% Packages
+\usepackage{graphicx} % For including images
+\usepackage{amsmath} % For mathematical symbols and equations
+\usepackage{hyperref} % For hyperlinks
+\usepackage{listings} % For including code snippets
+
+% Title
+\title{Assignment 3 Report}
+\author{Tom Gerson, Sebastien Boo}
+\date{March 8, 2024}
+
+\begin{document}
+	
+	\maketitle
+	
+	
+	\section*{Task 1}
+		\paragraph{a)}
+		Adding padding to the image : 
+		\[
+		\begin{matrix}
+			0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+			0 & 2 & 1 & 2 & 3 & 1 & 0\\
+			0 & 3 & 9 & 1 & 1 & 4 & 0\\
+			0 & 4 & 5 & 0 & 7 & 0 & 0\\
+			0 & 0 & 0 & 0 & 0 & 0 & 0\\
+		\end{matrix}
+		\]
+		We then apply hadamard product between the kernel matrix and each of the matrix below, obtained by sliding the kernel with stride = 1 :
+		\[
+		\begin{bmatrix}
+			0 & 0 & 0 \\
+			0 & 2 & 1 \\
+			0 & 3 & 9 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			0 & 0 & 0 \\
+			2 & 1 & 2 \\
+			3 & 9 & 1 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			0 & 0 & 0 \\
+			1 & 2 & 3 \\
+			9 & 1 & 1 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			0 & 0 & 0 \\
+			2 & 3 & 1 \\
+			1 & 1 & 4 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			0 & 0 & 0 \\
+			3 & 1 & 0 \\
+			1 & 4 & 0 \\
+		\end{bmatrix}
+		\]
+		\[
+		\begin{bmatrix}
+			0 & 2 & 1 \\
+			0 & 3 & 9 \\
+			0 & 4 & 5 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			2 & 1 & 2 \\
+			3 & 9 & 1 \\
+			4 & 5 & 0
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			1 & 2 & 3\\
+			9 & 1 & 1\\
+			5 & 0 & 7
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			2 & 3 & 1\\
+			1 & 1 & 4\\
+			0 & 7 & 0
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			3 & 1 & 0\\
+			1 & 4 & 0\\
+			7 & 0 & 0
+		\end{bmatrix}
+		\]
+		\[
+		\begin{bmatrix}
+			0 & 3 & 9 \\
+			0 & 4 & 5 \\
+			0 & 0 & 0 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			3 & 9 & 1 \\
+			4 & 5 & 0 \\
+			0 & 0 & 0 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			9 & 1 & 1 \\
+			5 & 0 & 7 \\
+			0 & 0 & 0 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			1 & 1 & 4 \\
+			0 & 7 & 0 \\
+			0 & 0 & 0 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			1 & 4 & 0 \\
+			7 & 0 & 0 \\
+			0 & 0 & 0 \\
+		\end{bmatrix}
+		\]
+		
+	We obtain : 
+	
+		\[
+		\begin{bmatrix}
+			0 & 0 & 0 \\
+			0 & 0 & 2 \\
+			0 & 0 & 9 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			 0 & 0 & 0 \\
+			-4 & 0 & 4 \\
+			-3 & 0 & 1 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			 0 & 0 & 0 \\
+			-2 & 0 & 6 \\
+			-9 & 0 & 1 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			 0 & 0 & 0 \\
+			-4 & 0 & 2 \\
+			-1 & 0 & 4 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+		 	 0 & 0 & 0 \\
+			-6 & 0 & 0 \\
+			-1 & 0 & 0 \\
+		\end{bmatrix}
+		\]
+	
+		\[
+		\begin{bmatrix}
+			0 & 0 & 1 \\
+			0 & 0 & 18 \\
+			0 & 0 & 5 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			-2 & 0 & 2 \\
+			-6 & 0 & 2 \\
+			-4 & 0 & 0
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			 -1 & 0 & 3\\
+			-18 & 0 & 2\\
+		 	 -5 & 0 & 7
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			-2 & 0 & 1\\
+			-2 & 0 & 8\\
+			 0 & 0 & 0
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			-3 & 0 & 0\\
+			-2 & 0 & 0\\
+			-7 & 0 & 0
+		\end{bmatrix}
+		\]
+	
+		\[
+		\begin{bmatrix}
+			0 & 0 & 9 \\
+			0 & 0 & 10 \\
+			0 & 0 & 0 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			-3 & 0 & 1 \\
+			-8 & 0 & 0 \\
+			 0 & 0 & 0 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			 -9 & 0 & 1 \\
+			-10 & 0 & 14 \\
+			  0 & 0 & 0 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			-1 & 0 & 4 \\
+			 0 & 0 & 0 \\
+			 0 & 0 & 0 \\
+		\end{bmatrix}
+		\quad
+		\begin{bmatrix}
+			 -1 & 0 & 0 \\
+			-14 & 0 & 0 \\
+			  0 & 0 & 0 \\
+		\end{bmatrix}
+		\]
+	
+	
+	
+		\paragraph{b)}
+	
+	\section*{Task 2}
+
+	
+\end{document}

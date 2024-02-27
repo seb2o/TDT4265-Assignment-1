@@ -5,7 +5,8 @@
 \usepackage{amsmath} % For mathematical symbols and equations
 \usepackage{hyperref} % For hyperlinks
 \usepackage{listings} % For including code snippets
-\usepackage{tcolorbox}
+\usepackage{numprint}
+
 
 \begin{document}
 	\section*{Task 1}
@@ -231,9 +232,7 @@
 			W_O = \frac{W_I - F + 2P}{S} + 1 = W_I - 6 + 2P 			
 		\end{aligned}
 		\]
-		Because we want $H_O = H_I$ and $W_O = W_I$, we need $2P = 6$, thus, 
-		$$ P = 3$$
-		Note that the number of filter does not impact the output image shape.
+		Because we want $H_O = H_I$ and $W_O = W_I$, we need $2P = 6 \Rightarrow P = 3$
 		
 		\paragraph{d)}
 		Using same equation as above, we have
@@ -253,10 +252,32 @@
 		Pooled feature maps have dimensions $254 \times 254$
 		
 		\paragraph{f)}
-		Similarly, feature maps of the second layer have dimension $252 \times 252$
+		Similarly, feature maps of the second layer have dimension $252 \times 252$.		
 		
 		\paragraph{g)}
-		
+		Each Conv layer filter has one weight kernel and one bias per input depth. Since the kernels have size $5 \times 5$, each conv layer has $D_I \cdot 26 \cdot D_O$ parameters.\newline  
+		The Pooling layers and Flatten layer do not introduce parameters. \newline
+		Each FC layers has a bias for each of its neuron and one weight per input unit for each of all its neurons, so each FC layer has $ (I+1) \cdot O $ parameters, where $I$ is the number of input units of the layer, and $O$ is the number of output units. \newline
+		Each pooling layer divides width and height of input by 2 each, leaving depth untouched :
+		\[
+			\indent 
+			{32\times 32 \times 32}		\underset{Pool1, Conv2}{\Rightarrow}
+		 	{16 \times 16 \times 64}	\underset{Pool2, Conv3}{\Rightarrow}
+		    { 8 \times 8 \times 128}	\underset{Pool3}{\Rightarrow}
+		    { 4 \times 4 \times 128}	\underset{Flatten}{\Rightarrow}
+		    2048 \times 1
+		 \]
+		 ConvLayer 1 has a 3-channel input and produce 32 feature maps : \newline
+		 $ \indent 3 \cdot 26 \cdot 32 = \numprint{2496}$ parameters. \newline
+		 ConvLayer 2 has a 32-channel input and produce 64 feature maps : \newline
+		 $ \indent 32 \cdot 26 \cdot 64 = \numprint{53248} $ parameters. \newline
+		 ConvLayer 3 has a 64-channel input and produce 128 feature maps : \newline
+		 $\indent 64 \cdot 26 \cdot 128 = \numprint{212992}$ parameters. \newline
+		 FClayer1 has 2048 inputs and 64 output : 
+		 $ (2048 + 1) \cdot 64 = \numprint{131136} $ parameters. \newline
+		 FClayer2 has 64 inputs and 10 output : 
+		 $ (64 + 1) \cdot 10 = \numprint{650}  $ parameters. \newline
+		 Taking the sum, we find that the model has $400\,522$ parameters.
 	\section*{Task 2}
 
 	

@@ -5,17 +5,9 @@
 \usepackage{amsmath} % For mathematical symbols and equations
 \usepackage{hyperref} % For hyperlinks
 \usepackage{listings} % For including code snippets
-
-% Title
-\title{Assignment 3 Report}
-\author{Tom Gerson, Sebastien Boo}
-\date{March 8, 2024}
+\usepackage{tcolorbox}
 
 \begin{document}
-	
-	\maketitle
-	
-	
 	\section*{Task 1}
 		\paragraph{a)}
 		Adding padding to the image : 
@@ -126,105 +118,145 @@
 	We obtain : 
 	
 		\[
-		\begin{bmatrix}
-			0 & 0 & 0 \\
-			0 & 0 & 2 \\
-			0 & 0 & 9 \\
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			 0 & 0 & 0 \\
-			-4 & 0 & 4 \\
-			-3 & 0 & 1 \\
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			 0 & 0 & 0 \\
-			-2 & 0 & 6 \\
-			-9 & 0 & 1 \\
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			 0 & 0 & 0 \\
-			-4 & 0 & 2 \\
-			-1 & 0 & 4 \\
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-		 	 0 & 0 & 0 \\
-			-6 & 0 & 0 \\
-			-1 & 0 & 0 \\
-		\end{bmatrix}
+		\begin{aligned}
+			&\begin{bmatrix}
+				0 & 0 & 0 \\
+				0 & 0 & 2 \\
+				0 & 0 & 9 \\
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				 0 & 0 & 0 \\
+				-4 & 0 & 4 \\
+				-3 & 0 & 1 \\
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				 0 & 0 & 0 \\
+				-2 & 0 & 6 \\
+				-9 & 0 & 1 \\
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				 0 & 0 & 0 \\
+				-4 & 0 & 2 \\
+				-1 & 0 & 4 \\
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+			 	 0 & 0 & 0 \\
+				-6 & 0 & 0 \\
+				-1 & 0 & 0 \\
+			\end{bmatrix}
+			\\
+			&\begin{bmatrix}
+				0 & 0 & 1 \\
+				0 & 0 & 18 \\
+				0 & 0 & 5 \\
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				-2 & 0 & 2 \\
+				-6 & 0 & 2 \\
+				-4 & 0 & 0
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				 -1 & 0 & 3\\
+				-18 & 0 & 2\\
+			 	 -5 & 0 & 7
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				-2 & 0 & 1\\
+				-2 & 0 & 8\\
+				 0 & 0 & 0
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				-3 & 0 & 0\\
+				-2 & 0 & 0\\
+				-7 & 0 & 0
+			\end{bmatrix}
+		\\
+			&\begin{bmatrix}
+				0 & 0 & 9 \\
+				0 & 0 & 10 \\
+				0 & 0 & 0 \\
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				-3 & 0 & 1 \\
+				-8 & 0 & 0 \\
+				 0 & 0 & 0 \\
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				 -9 & 0 & 1 \\
+				-10 & 0 & 14 \\
+				  0 & 0 & 0 \\
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				-1 & 0 & 4 \\
+				 0 & 0 & 0 \\
+				 0 & 0 & 0 \\
+			\end{bmatrix}
+			\quad
+			&\begin{bmatrix}
+				 -1 & 0 & 0 \\
+				-14 & 0 & 0 \\
+				  0 & 0 & 0 \\
+			\end{bmatrix}
+		\end{aligned}
 		\]
-	
+		the result is finally the $3 \times 5$ matrix where the $ij^{th}$ component is the sum of the elements of the $ij^{th}$ above :
 		\[
 		\begin{bmatrix}
-			0 & 0 & 1 \\
-			0 & 0 & 18 \\
-			0 & 0 & 5 \\
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			-2 & 0 & 2 \\
-			-6 & 0 & 2 \\
-			-4 & 0 & 0
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			 -1 & 0 & 3\\
-			-18 & 0 & 2\\
-		 	 -5 & 0 & 7
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			-2 & 0 & 1\\
-			-2 & 0 & 8\\
-			 0 & 0 & 0
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			-3 & 0 & 0\\
-			-2 & 0 & 0\\
-			-7 & 0 & 0
+			11 & -2 & -4 & 1 & -7 \\
+			24 & -8 & -12 & 5 & -12 \\
+			19 & -10 & -4 & 3 & -15 \\
 		\end{bmatrix}
 		\]
+		
 	
+		\paragraph{b)} 
+		The Convolutional  layer (i) is the one reducing translational sensibility since a kernel for the convolution will detect a feature regardless of its position in the image
+		
+		\paragraph{c)} 
+		The output height $H_O$ and width $W_O$ are computed as follow, where $H_I \text{ and } W_I $ are the image height and width, $S$ the stride, $F$ the kernel (receptive $\textbf{F}$ield) side size and $P$ the padding size  : 
 		\[
-		\begin{bmatrix}
-			0 & 0 & 9 \\
-			0 & 0 & 10 \\
-			0 & 0 & 0 \\
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			-3 & 0 & 1 \\
-			-8 & 0 & 0 \\
-			 0 & 0 & 0 \\
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			 -9 & 0 & 1 \\
-			-10 & 0 & 14 \\
-			  0 & 0 & 0 \\
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			-1 & 0 & 4 \\
-			 0 & 0 & 0 \\
-			 0 & 0 & 0 \\
-		\end{bmatrix}
-		\quad
-		\begin{bmatrix}
-			 -1 & 0 & 0 \\
-			-14 & 0 & 0 \\
-			  0 & 0 & 0 \\
-		\end{bmatrix}
+		\begin{aligned}
+			H_O = \frac{H_I - F + 2P}{S} + 1 = H_I - 6 + 2P\\
+			W_O = \frac{W_I - F + 2P}{S} + 1 = W_I - 6 + 2P 			
+		\end{aligned}
 		\]
-	
-	
-	
-		\paragraph{b)}
-	
+		Because we want $H_O = H_I$ and $W_O = W_I$, we need $2P = 6$, thus, 
+		$$ P = 3$$
+		Note that the number of filter does not impact the output image shape.
+		
+		\paragraph{d)}
+		Using same equation as above, we have
+		\[
+		F = H_I + 2P - S(H_O - 1) = 512 - 508 - 1 = 3
+		\]
+		Kernel has dimensions $ 3 \times 3 $
+		
+		\paragraph{e)}
+		Again using same equation,
+		\[ 
+		\begin{aligned}
+		H_O = \frac{H_I - F + 2P}{S} + 1 = \frac{508 - 2}{2} + 1 = 254 \\
+		W_O = \frac{W_I - F + 2P}{S} + 1 = \frac{508 - 2}{2} + 1 = 254
+		\end{aligned}
+		\]
+		Pooled feature maps have dimensions $254 \times 254$
+		
+		\paragraph{f)}
+		Similarly, feature maps of the second layer have dimension $252 \times 252$
+		
+		\paragraph{g)}
+		
 	\section*{Task 2}
 
 	

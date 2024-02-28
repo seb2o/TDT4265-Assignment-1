@@ -56,9 +56,9 @@ class ExampleModel(nn.Module):
         Args:
             x: Input image, shape: [batch_size, 3, 32, 32]
         """
-        # TODO: Implement this function (Task  2a)
         batch_size = x.shape[0]
-        out = x
+        features = self.feature_extractor(x)
+        out = self.classifier(features)
         expected_shape = (batch_size, self.num_classes)
         assert out.shape == (
             batch_size,

@@ -15,29 +15,40 @@ class ExampleModel(nn.Module):
             num_classes: Number of classes we want to predict (10)
         """
         super().__init__()
-        # TODO: Implement this function (Task  2a)
-        num_filters = 32  # Set number of filters in first conv layer
         self.num_classes = num_classes
-        # Define the convolutional layers
-        self.feature_extractor = nn.Sequential(
-            nn.Conv2d(
-                in_channels=image_channels,
-                out_channels=num_filters,
-                kernel_size=5,
-                stride=1,
-                padding=2,
-            )
-        )
-        # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
-        self.num_output_features = 32 * 32 * 32
-        # Initialize our last fully connected layer
-        # Inputs all extracted features from the convolutional layers
-        # Outputs num_classes predictions, 1 for each class.
-        # There is no need for softmax activation function, as this is
-        # included with nn.CrossEntropyLoss
-        self.classifier = nn.Sequential(
-            nn.Linear(self.num_output_features, num_classes),
-        )
+        # Assumes same kernel, stride and padding for all conv layers
+        self.conv_kernel_size = 5
+        self.conv_stride = 1
+        self.conv_padding = 2
+        # Assumes same kernel and stride for all pool layers
+        self.pool_stride = 1
+        self.pool_kernel_size = 2
+        # Number of output filters for each conv layer
+        self.num_filters = [image_channels, 32, 64, 128]
+        # Number of output of the feature extractor is the number of filter times size of the last pool layer output.
+        # Hardcoded because no input image parameter. Computed in the report
+        self.feature_extractor_output_size = self.num_filters[-1] * 4 * 4
+        # Assumes a single hidden fcLayer
+        self.hidden_units = 64
+
+        # Creates feature extractor as a single layer
+        # A conv layer is Conv2D -> ReLu -> MaxPool2D
+        self.conv_layers = [
+            nn.Sequential(
+                nn.Conv2d(input_depth, output_depth, self.conv_kernel_size, self.conv_stride, self.conv_padding),
+                nn.ReLU(),
+                nn.MaxPool2d(self.pool_kernel_size, self.pool_stride))
+            for input_depth, output_depth in zip(self.num_filters, self.num_filters[1:])
+        ]
+        self.feature_extractor = nn.Sequential(*self.conv_layers)
+
+        # Creates the classifier as a single layer
+        self.fc_layers = [
+            nn.Linear(self.feature_extractor_output_size, self.hidden_units),
+            nn.ReLU(),
+            nn.Linear(self.hidden_units, num_classes)
+        ]  # No softmax here because already included in cross entropy loss
+        self.classifier = nn.Sequential(*self.fc_layers)
 
     def forward(self, x):
         """
@@ -74,8 +85,6 @@ def create_plots(trainer: Trainer, name: str):
     plt.legend()
     plt.savefig(plot_path.joinpath(f"{name}_plot.png"))
     plt.show()
-
-
 
 
 def main():

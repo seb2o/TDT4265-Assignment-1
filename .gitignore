@@ -215,3 +215,6 @@ pyrightconfig.json
 *.png
 *.zip
 data/
+/assignment3/report.aux
+/assignment3/report.out
+/assignment3/report.synctex.gz

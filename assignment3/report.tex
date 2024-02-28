@@ -11,7 +11,7 @@
 \begin{document}
 	\section*{Task 1}
 		\paragraph{a)}
-		Adding padding to the image : 
+		Adding padding to the image and flipping the kernel : 
 		\[
 		\begin{matrix}
 			0 & 0 & 0 & 0 & 0 & 0 & 0 \\
@@ -20,6 +20,12 @@
 			0 & 4 & 5 & 0 & 7 & 0 & 0\\
 			0 & 0 & 0 & 0 & 0 & 0 & 0\\
 		\end{matrix}
+		\quad,
+		\begin{bmatrix}
+			1 & 0 & -1 \\
+			2 & 0 & -2 \\
+			1 & 0 & -1 \\
+		\end{bmatrix}
 		\]
 		We then apply hadamard product between the kernel matrix and each of the matrix below, obtained by sliding the kernel with stride = 1 :
 		\[
@@ -120,91 +126,91 @@
 	
 		\[
 		\begin{aligned}
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				0 & 0 & 0 \\
 				0 & 0 & 2 \\
 				0 & 0 & 9 \\
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				 0 & 0 & 0 \\
 				-4 & 0 & 4 \\
 				-3 & 0 & 1 \\
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				 0 & 0 & 0 \\
 				-2 & 0 & 6 \\
 				-9 & 0 & 1 \\
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				 0 & 0 & 0 \\
 				-4 & 0 & 2 \\
 				-1 & 0 & 4 \\
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 			 	 0 & 0 & 0 \\
 				-6 & 0 & 0 \\
 				-1 & 0 & 0 \\
 			\end{bmatrix}
 			\\
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				0 & 0 & 1 \\
 				0 & 0 & 18 \\
 				0 & 0 & 5 \\
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				-2 & 0 & 2 \\
 				-6 & 0 & 2 \\
 				-4 & 0 & 0
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				 -1 & 0 & 3\\
 				-18 & 0 & 2\\
 			 	 -5 & 0 & 7
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				-2 & 0 & 1\\
 				-2 & 0 & 8\\
 				 0 & 0 & 0
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				-3 & 0 & 0\\
 				-2 & 0 & 0\\
 				-7 & 0 & 0
 			\end{bmatrix}
 		\\
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				0 & 0 & 9 \\
 				0 & 0 & 10 \\
 				0 & 0 & 0 \\
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				-3 & 0 & 1 \\
 				-8 & 0 & 0 \\
 				 0 & 0 & 0 \\
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				 -9 & 0 & 1 \\
 				-10 & 0 & 14 \\
 				  0 & 0 & 0 \\
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				-1 & 0 & 4 \\
 				 0 & 0 & 0 \\
 				 0 & 0 & 0 \\
 			\end{bmatrix}
 			\quad
-			&\begin{bmatrix}
+			&-\begin{bmatrix}
 				 -1 & 0 & 0 \\
 				-14 & 0 & 0 \\
 				  0 & 0 & 0 \\
@@ -213,7 +219,7 @@
 		\]
 		the result is finally the $3 \times 5$ matrix where the $ij^{th}$ component is the sum of the elements of the $ij^{th}$ above :
 		\[
-		\begin{bmatrix}
+		-\begin{bmatrix}
 			11 & -2 & -4 & 1 & -7 \\
 			24 & -8 & -12 & 5 & -12 \\
 			19 & -10 & -4 & 3 & -15 \\

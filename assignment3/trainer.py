@@ -31,7 +31,7 @@ def compute_loss_and_accuracy(
             output_probs = model(X_batch)
             cumulative_loss += loss_criterion(output_probs, Y_batch).item()
             preds = torch.argmax(output_probs, dim=1)
-            accuracy += torch.count_nonzero(preds == Y_batch).float().mean().item()
+            accuracy += (preds == Y_batch).float().mean().item()
 
             # Predicted class is the max index over the column dimension
     return cumulative_loss/len(dataloader), accuracy/len(dataloader)

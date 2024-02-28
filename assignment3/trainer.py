@@ -14,15 +14,14 @@ def compute_loss_and_accuracy(
     Computes the average loss and the accuracy over the whole dataset
     in dataloader.
     Args:
-        dataloder: Validation/Test dataloader
+        dataloader: Validation/Test dataloader
         model: torch.nn.Module
         loss_criterion: The loss criterion, e.g: torch.nn.CrossEntropyLoss()
     Returns:
         [average_loss, accuracy]: both scalar.
     """
-    average_loss = 0
+    cumulative_loss = 0
     accuracy = 0
-    # TODO: Implement this function (Task  2a)
     with torch.no_grad():
         for (X_batch, Y_batch) in dataloader:
             # Transfer images/labels to GPU VRAM, if possible
@@ -30,11 +29,12 @@ def compute_loss_and_accuracy(
             Y_batch = utils.to_cuda(Y_batch)
             # Forward pass the images through our model
             output_probs = model(X_batch)
-
-            # Compute Loss and Accuracy
+            cumulative_loss += loss_criterion(output_probs, Y_batch).item()
+            preds = torch.argmax(output_probs, dim=1)
+            accuracy += torch.count_nonzero(preds == Y_batch).float().mean().item()
 
             # Predicted class is the max index over the column dimension
-    return average_loss, accuracy
+    return cumulative_loss/len(dataloader), accuracy/len(dataloader)
 
 
 class Trainer:
@@ -158,6 +158,7 @@ class Trainer:
         """
         Trains the model for [self.epochs] epochs.
         """
+
         def should_validate_model():
             return self.global_step % self.num_steps_per_val == 0
 

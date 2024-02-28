@@ -21,7 +21,7 @@ class ExampleModel(nn.Module):
         self.conv_stride = 1
         self.conv_padding = 2
         # Assumes same kernel and stride for all pool layers
-        self.pool_stride = 1
+        self.pool_stride = 2
         self.pool_kernel_size = 2
         # Number of output filters for each conv layer
         self.num_filters = [image_channels, 32, 64, 128]

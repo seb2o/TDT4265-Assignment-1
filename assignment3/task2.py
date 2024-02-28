@@ -40,7 +40,7 @@ class ExampleModel(nn.Module):
                 nn.MaxPool2d(self.pool_kernel_size, self.pool_stride))
             for input_depth, output_depth in zip(self.num_filters, self.num_filters[1:])
         ]
-        self.feature_extractor = nn.Sequential(*self.conv_layers)
+        self.feature_extractor = nn.Sequential(*self.conv_layers, nn.Flatten())
 
         # Creates the classifier as a single layer
         self.fc_layers = [

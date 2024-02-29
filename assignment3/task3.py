@@ -104,9 +104,10 @@ def main():
     early_stop_count = 4
     dropout_prob = .0
     dataloaders = load_cifar10(batch_size)
-    model = ImprovedModel(image_channels=3, num_classes=10)
-    trainer = Trainer(
-        batch_size, learning_rate, early_stop_count, epochs, model, dataloaders
+    model = ImprovedModel(image_channels=3, num_classes=10, dropout=dropout_prob)
+    optimizer = torch.optim.Adam(model.parameters())
+    trainer = ImprovedTrainer(
+        batch_size, early_stop_count, epochs, model, dataloaders, optimizer
     )
     trainer.train()
     create_plots(trainer, "task2")

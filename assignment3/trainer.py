@@ -34,7 +34,7 @@ def compute_loss_and_accuracy(
             accuracy += (preds == Y_batch).float().mean().item()
 
             # Predicted class is the max index over the column dimension
-    return cumulative_loss/len(dataloader), accuracy/len(dataloader)
+    return cumulative_loss / len(dataloader), accuracy / len(dataloader)
 
 
 class Trainer:
@@ -45,7 +45,8 @@ class Trainer:
                  early_stop_count: int,
                  epochs: int,
                  model: torch.nn.Module,
-                 dataloaders: typing.List[torch.utils.data.DataLoader]):
+                 dataloaders: typing.List[torch.utils.data.DataLoader],
+                 optimizer: torch.optim = None):
         """
             Initialize our trainer class.
         """
@@ -63,8 +64,11 @@ class Trainer:
         print(self.model)
 
         # Define our optimizer. SGD = Stochastich Gradient Descent
-        self.optimizer = torch.optim.SGD(self.model.parameters(),
-                                         self.learning_rate)
+        if optimizer is None:
+            torch.optim.SGD(self.model.parameters(),
+                            self.learning_rate)
+        else:
+            self.optimizer = optimizer
 
         # Load our dataset
         self.dataloader_train, self.dataloader_val, self.dataloader_test = dataloaders

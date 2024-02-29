@@ -1,13 +1,17 @@
 import pathlib
 import matplotlib.pyplot as plt
+import torch
+
 import utils
 from torch import nn
+
+from improvedTrainer import ImprovedTrainer
 from dataloaders import load_cifar10
 from trainer import Trainer
 
 
 class ImprovedModel(nn.Module):
-    def __init__(self, image_channels, num_classes):
+    def __init__(self, image_channels, num_classes, dropout=0.):
         """
         Is called when model is initialized.
         Args:
@@ -30,6 +34,8 @@ class ImprovedModel(nn.Module):
         self.feature_extractor_output_size = self.num_filters[-1] * 4 * 4
         # Assumes a single hidden fcLayer
         self.hidden_units = 64
+        self.dropout = nn.Dropout(dropout)
+
 
         # Creates feature extractor as a single layer
         # A conv layer is Conv2D -> ReLu -> MaxPool2D
@@ -44,6 +50,7 @@ class ImprovedModel(nn.Module):
 
         # Creates the classifier as a single layer
         self.fc_layers = [
+            self.dropout,
             nn.Linear(self.feature_extractor_output_size, self.hidden_units),
             nn.ReLU(),
             nn.Linear(self.hidden_units, num_classes)
@@ -67,7 +74,7 @@ class ImprovedModel(nn.Module):
         return out
 
 
-def create_plots(trainer: Trainer, name: str):
+def create_plots(trainer: ImprovedTrainer, name: str):
     plot_path = pathlib.Path("plots")
     plot_path.mkdir(exist_ok=True)
     # Save plots and show them
@@ -93,9 +100,9 @@ def main():
     utils.set_seed(0)
     print(f"Using device: {utils.get_device()}")
     epochs = 10
-    batch_size = 64
-    learning_rate = 5e-2
+    batch_size = 32
     early_stop_count = 4
+    dropout_prob = .0
     dataloaders = load_cifar10(batch_size)
     model = ImprovedModel(image_channels=3, num_classes=10)
     trainer = Trainer(

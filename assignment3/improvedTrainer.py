@@ -37,21 +37,19 @@ def compute_loss_and_accuracy(
     return cumulative_loss / len(dataloader), accuracy / len(dataloader)
 
 
-class Trainer:
+class ImprovedTrainer:
 
     def __init__(self,
                  batch_size: int,
-                 learning_rate: float,
                  early_stop_count: int,
                  epochs: int,
                  model: torch.nn.Module,
                  dataloaders: typing.List[torch.utils.data.DataLoader],
-                 optimizer: torch.optim = None):
+                 optimizer: torch.optim):
         """
             Initialize our trainer class.
         """
         self.batch_size = batch_size
-        self.learning_rate = learning_rate
         self.early_stop_count = early_stop_count
         self.epochs = epochs
 
@@ -63,12 +61,7 @@ class Trainer:
         self.model = utils.to_cuda(self.model)
         print(self.model)
 
-        # Define our optimizer. SGD = Stochastich Gradient Descent
-        if optimizer is None:
-            torch.optim.SGD(self.model.parameters(),
-                            self.learning_rate)
-        else:
-            self.optimizer = optimizer
+        self.optimizer = optimizer
 
         # Load our dataset
         self.dataloader_train, self.dataloader_val, self.dataloader_test = dataloaders

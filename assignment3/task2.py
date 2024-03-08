@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import utils
 from torch import nn
 from dataloaders import load_cifar10
-from trainer import Trainer
+from trainer import Trainer, compute_loss_and_accuracy
 
 
 class ExampleModel(nn.Module):
@@ -92,7 +92,7 @@ def main():
     # You can try to change this and check if you still get the same result!
     utils.set_seed(0)
     print(f"Using device: {utils.get_device()}")
-    epochs = 10
+    epochs = 10 
     batch_size = 64
     learning_rate = 5e-2
     early_stop_count = 4
@@ -103,7 +103,10 @@ def main():
     )
     trainer.train()
     create_plots(trainer, "task2")
-
-
+    loss_train, acc_train = compute_loss_and_accuracy(dataloaders[0],model,trainer.loss_criterion)
+    loss_val, acc_val = compute_loss_and_accuracy(dataloaders[1],model,trainer.loss_criterion)
+    loss_test, acc_test = compute_loss_and_accuracy(dataloaders[2],model,trainer.loss_criterion)
+    print("Loss Training/Validation/Test: %.02f/%.02f/%.02f" %(loss_train,loss_val,loss_test))
+    print("Accuracy Training/Validation/Test: %.02f/%.02f/%.02f" %(acc_train,acc_val,acc_test))
 if __name__ == "__main__":
     main()

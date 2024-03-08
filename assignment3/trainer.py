@@ -65,7 +65,7 @@ class Trainer:
 
         # Define our optimizer. SGD = Stochastich Gradient Descent
         if optimizer is None:
-            torch.optim.SGD(self.model.parameters(),
+            self.optimizer = torch.optim.SGD(self.model.parameters(),
                             self.learning_rate)
         else:
             self.optimizer = optimizer
